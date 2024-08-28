@@ -1,0 +1,7 @@
+.container1{
+    background: linear-gradient(90deg in hsl shorter hue, red, blue);
+}
+
+h1{
+    padding: 50px;
+}
