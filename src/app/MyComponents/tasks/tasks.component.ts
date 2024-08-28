@@ -46,6 +46,11 @@ export class TasksComponent implements OnInit {
     let maxOverdueTime = -Infinity;
     let minTaskName = '';
     let maxTaskName = '';
+  
+    // Define the 6-hour buffer in milliseconds
+    const sixHoursInMillis = 18.5 * 60 * 60 * 1000;
+  
+    // Filter out completed tasks
     const incompleteTasks = this.tasks.filter(task => task.status !== 'completed');
   
     if (incompleteTasks.length === 0) {
@@ -61,14 +66,20 @@ export class TasksComponent implements OnInit {
       const dueDate = new Date(task.dueDate).getTime();
       const timeDifference = dueDate - now;
   
-      if (timeDifference > 0) {
-        if (timeDifference < minTimeLeft) {
-          minTimeLeft = timeDifference;
+      // Apply 6-hour buffer for minimum time left
+      const minTimeLeftWithBuffer = timeDifference + sixHoursInMillis;
+  
+      // Apply 6-hour buffer for maximum overdue time
+      const maxOverdueTimeWithBuffer = timeDifference + sixHoursInMillis;
+  
+      if (minTimeLeftWithBuffer > 0) {
+        if (minTimeLeftWithBuffer < minTimeLeft) {
+          minTimeLeft = minTimeLeftWithBuffer;
           minTaskName = task.title;
         }
       } else {
-        if (-timeDifference > maxOverdueTime) {
-          maxOverdueTime = -timeDifference;
+        if (-maxOverdueTimeWithBuffer > maxOverdueTime) {
+          maxOverdueTime = -maxOverdueTimeWithBuffer;
           maxTaskName = task.title;
         }
       }
@@ -98,6 +109,7 @@ export class TasksComponent implements OnInit {
       this.maxTaskName = maxTaskName;
     }
   }
+  
   
 
   onDeleteTask(task: Task) {
